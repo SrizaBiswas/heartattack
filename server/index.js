@@ -1334,7 +1334,7 @@ app.post(
 
 //rating
 app.post('/submit-rating', async (req, res) => {
-  const { bkName, userId, rating } = req.body;
+  const { bkName,username, userId, rating } = req.body;
   try {
     const book = await TBook.findOne({ bkName });
     if (!book) {
@@ -1345,7 +1345,7 @@ app.post('/submit-rating', async (req, res) => {
     if (existingRatingIndex !== -1) {
       book.ratings[existingRatingIndex].rating = rating;
     } else {
-      book.ratings.push({ userId, rating });
+      book.ratings.push({ userId,username, rating });
     }
     await book.save();
     res.json({ message: 'Rating submitted successfully' });
@@ -1639,43 +1639,53 @@ app.get('/user-favorites/:userId', async (req, res) => {
 
 //handel premium
 
-const paymentDetailSchema = new mongoose.Schema(
-  {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: false,
-      ref: "User",
-    },
-    paymentId: {
-      type: String,
-      required: true,
-    },
-    plan: {
-      type: String,
-      required: true,
-    },
-    date: {
-      type: Date,
-      required: true,
-    },
-    isPremium: {
-      type: Boolean,
-      required: true,
-    },
-    expiryDate: {
-      type: String,
-      required: true,
-    },
+const paymentDetailSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "User",
   },
-  { timestamps: true }
-);
+  username: {
+    type: String,
+    required: true,
+  },
+  paymentId: {
+    type: String,
+    required: true,
+  },
+  plan: {
+    type: String,
+    required: true,
+  },
+  amount: {
+    type: String,
+    required: true,
+  },
+  currency: {
+    type: String,
+    required: true,
+  },
+  date: {
+    type: Date,
+    required: true,
+  },
+  isPremium: {
+    type: Boolean,
+    required: true,
+  },
+  expiryDate: {
+    type: Date,
+    required: true,
+  },
+}, { timestamps: true });
+
 
 const PaymentDetail = new mongoose.model("PaymentDetail", paymentDetailSchema);
 
 app.post("/store-payment-details", async (req, res) => {
   // console.log("Received payment details:", req.body);
   try {
-    const { userId, paymentId, plan, date } = req.body;
+    const { userId, username, paymentId, plan, date, amount, currency } = req.body;
     const pdfPath = `receipts/${paymentId}.pdf`; // Path where the PDF receipt will be saved
 
     // Format the date for display
@@ -1711,12 +1721,16 @@ app.post("/store-payment-details", async (req, res) => {
       expiryDate.setFullYear(expiryDate.getFullYear() + 1);
     }
     console.log(expiryDate);
+    const readableAmount = `${currency} ${parseInt(amount) / 100}`;
 
     const paymentDetail = new PaymentDetail({
       userId: req.body.userId,
+      username:req.body.username,
       paymentId: req.body.paymentId,
       plan: req.body.plan,
       date: req.body.date,
+      amount:req.body.amount,
+      currency:req.body.currency,
       isPremium: true,
       expiryDate, // Make sure your schema supports this
     });

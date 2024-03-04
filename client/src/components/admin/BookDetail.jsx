@@ -136,6 +136,8 @@ const removeFromFavorites = async () => {
           comment: newComment,
         });
         setNewComment(""); // Reset the input field after submission
+        window.alert('Your comment sumbitted successfully!');
+
         // Optionally, fetch the updated comments list here
       } catch (error) {
         console.error('Error submitting comment', error);
@@ -229,6 +231,7 @@ const submitRating = (newRating) => {
   axios.post('http://localhost:3001/submit-rating', {
     bkName: bookDetail.bkName,
     userId: uData._id, // Assuming you store user ID in local storage or context
+    username:uData.username,
     rating: newRating,
   })
   .then((response) => {

@@ -102,9 +102,11 @@ const Premium = () => {
   };
 
   const getOptions = (planId, user) => {
+    const planAmountPaise = planId === "monthly" ? "4900" : "49900"; // Amount in paise
+    const planAmountRupees = planId === "monthly" ? "49" : "499"; // Converted to rupees for storage
     return {
       key: "rzp_test_e1jxBvUSc8OBPj",
-      amount: planId === "monthly" ? "4900" : "49900",
+      amount: planAmountPaise, // Keep this in paise for Razorpay processing
       currency: "INR",
       name: "Explore",
       description: "Subscription Payment",
@@ -114,9 +116,13 @@ const Premium = () => {
           `Payment successful! Payment ID: ${response.razorpay_payment_id}`
         );
         const paymentDetails = {
+          amount: planAmountRupees, // Store the amount in rupees
+          currency: "INR",
           userId: user?._id,
+          username: user?.username, // Including the username
           paymentId: response.razorpay_payment_id,
           plan: planId,
+          // Including the currency
           date: new Date().toISOString(),
         };
 

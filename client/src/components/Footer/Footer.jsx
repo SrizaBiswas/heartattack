@@ -3,7 +3,7 @@ import { FaLocationArrow, FaMobileAlt, FaEnvelope, FaInstagram } from "react-ico
 import LogoLight from "../../assets/website/logo.png";
 import LogoDark from "../../assets/website/logoDark.png";
 
-const yourGmail = "aakanshayadav61@gmail.com"; // Replace your_email@gmail.com with your actual Gmail address
+const yourGmail = "explorethebooks@gmail.com"; // Replace your_email@gmail.com with your actual Gmail address
 
 const FooterLinks = [
   {
