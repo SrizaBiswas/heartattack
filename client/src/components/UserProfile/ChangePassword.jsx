@@ -46,11 +46,11 @@ const ChangePassword = () => {
   };
 
   return (
-    <div className="accountsettings">
-      <h1 className="mainhead1">Change Password</h1>
+    <div className="pcaccountsettings">
+      <h1 className="pcmainhead1">Change Password</h1>
 
-      <div className="form">
-        <div className="form-group">
+      <div className="pcform">
+        <div className="pcform-group">
           <label htmlFor="oldpass">
             Old Password <span>*</span>
           </label>
@@ -59,7 +59,6 @@ const ChangePassword = () => {
               type={showOldPassword ? "text" : "password"}
               value={oldPassword}
               onChange={(e) => setOldPassword(e.target.value)}
-              style={{ backgroundColor: "black", color: "gray" }}
             />
             <div
               className="eye-icon text-2xl"
@@ -70,7 +69,7 @@ const ChangePassword = () => {
           </div>
         </div>
 
-        <div className="form-group">
+        <div className="pcform-group">
           <label htmlFor="newpass">
             New Password <span>*</span>
           </label>
@@ -79,7 +78,6 @@ const ChangePassword = () => {
               type={showNewPassword ? "text" : "password"}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              style={{ backgroundColor: "black", color: "gray" }}
             />
             <div
               className="eye-icon text-2xl"
@@ -90,7 +88,7 @@ const ChangePassword = () => {
           </div>
         </div>
 
-        <div className="form-group">
+        <div className="pcform-group">
           <label htmlFor="confirmpass">
             Confirm Password <span>*</span>
           </label>
@@ -99,7 +97,7 @@ const ChangePassword = () => {
               type={showConfirmPassword ? "text" : "password"}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              style={{ backgroundColor: "black", color: "gray" }}
+              
             />
             <div
               className="eye-icon text-2xl"
@@ -113,7 +111,7 @@ const ChangePassword = () => {
         {error && <p style={{ color: "red" }}>{error}</p>}
       </div>
 
-      <button className="mainbutton1" onClick={handleSaveChanges}>
+      <button className="pcmainbutton1" onClick={handleSaveChanges}>
         Save Changes
       </button>
     </div>

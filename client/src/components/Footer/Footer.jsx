@@ -1,29 +1,39 @@
-import React, { useState } from "react";
-import { FaLocationArrow, FaMobileAlt } from "react-icons/fa";
+import React from "react";
+import { FaLocationArrow, FaMobileAlt, FaEnvelope, FaInstagram } from "react-icons/fa";
 import LogoLight from "../../assets/website/logo.png";
 import LogoDark from "../../assets/website/logoDark.png";
+
+const yourGmail = "aakanshayadav61@gmail.com"; // Replace your_email@gmail.com with your actual Gmail address
 
 const FooterLinks = [
   {
     id: 1,
     title: "About",
-    link: "/#about",
+    link: "/about"
+  },
+  
+  {
+    id: 3,
+    title: "Gmail",
+    link: `mailto:${yourGmail},${yourGmail}`, // Include your Gmail address twice
+    icon: <FaEnvelope />,
   },
   {
-    id: 2,
-    title: "Contact",
-    link: "/#contact",
+    id: 4,
+    title: "Instagram",
+    link: "https://www.instagram.com/_.aakanshaa.__/", // Change your_instagram_username to your Instagram username
+    icon: <FaInstagram />,
   },
 ];
+
 const Footer = () => {
   return (
     <div className="bg-gray-100 dark:bg-neutral-800">
-      <section className="ontainer">
+      <section className="container">
         <div className="grid md:grid-cols-3 py-5">
           {/* company Details */}
           <div className=" py-8 px-4 ">
             <h1 className="sm:text-3xl text-xl font-bold sm:text-left text-justify mb-3 flex items-center gap-3">
-              {/* <img src={footerLogo} alt="Logo" className="max-w-[150px]" /> */}
               <img
                 src={LogoDark}
                 alt="Logo"
@@ -49,9 +59,6 @@ const Footer = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 col-span-2 md:pl-10 ">
             <div className="">
               <div className="py-8 px-4 ">
-                <h1 className="sm:text-xl text-xl font-bold sm:text-left text-justify mb-3">
-                  Important Links
-                </h1>
                 <ul className={`flex flex-col gap-3`}>
                   {FooterLinks.map((link) => (
                     <li
@@ -59,8 +66,15 @@ const Footer = () => {
                       className="cursor-pointer hover:translate-x-1 duration-300 hover:text-primary space-x-1 text-gray-500"
                     >
                       <span>&#11162;</span>
-                      <span>{link.title}</span>
+                      
+                      
+                      <a href={link.link} target="_blank" rel="noopener noreferrer">
+                        {link.icon}
+                        <span>{link.title}</span>
+                        
+                      </a>
                     </li>
+                    
                   ))}
                 </ul>
               </div>

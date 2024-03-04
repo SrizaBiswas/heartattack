@@ -12,32 +12,35 @@ import LegalNotice from '../components/UserProfile/LegalNotice';
 import { useParams } from 'react-router-dom';
 import YourAddedBooks from "../components/UserProfile/YourAddedBooks.jsx";
 
+// Define the URL for the default profile image
+const defaultProfileImage = "/assests/booksanime-ezgif.com-crop.gif";
+
 const UserProfile = () => {
   const { username, activepage } = useParams();
   const [user, setUser] = useState(null);
   const [isPremium, setIsPremium] = useState(false); // State to track premium status
 
- 
-  const fetchUserData = async () => {
+  const fetchUserData = async (updatedUsername) => {
+    const userToFetch = updatedUsername || username; // Use the updatedUsername if provided, else use the one from useParams
     try {
-      // Adjust the API endpoint or data as per your backend requirements
-      const response = await axios.post('http://localhost:3001/get-username', { username });
+      const response = await axios.get('http://localhost:3001/get-username', {
+        params: { username: userToFetch }
+      });
       if (response.data && response.data.user) {
         setUser(response.data.user);
         setIsPremium(response.data.user.isPremium);
-    } else {
+      } else {
         console.error('User fetch failed:', response.data.message || 'No user data');
-    }
-    
+      }
     } catch (error) {
       console.error('Failed to fetch user data:', error);
     }
   };
+
   useEffect(() => {
     fetchUserData();
-}, [username]);
+  }, [username]);
 
-  
   return (
     <div className="userprofile">
       <SingleBanner
@@ -46,16 +49,19 @@ const UserProfile = () => {
       />
       {/* Display the profile photo at the top */}
       <img
-        src={user?.profileimage || '../..assets/explore.png'} // Fallback to a default image if profileimage is not available
+        src={user?.profileimage || defaultProfileImage} // Use defaultProfileImage if user.profileimage is not available
         alt="Profile"
         className="userProfilePhoto"
       />
+      <div className="welcome-message animated-welcome">
+        Welcome, {user?.name}! <span className="emoji">😊</span>
+      </div>
       <div className="userprofilein mt-4">
         <div className="left">
           <UserSidebar activepage={activepage} isPremium={isPremium} />
         </div>
         <div className="right">
-          {activepage === 'accountsettings' && <AccountSettings user={user} fetchUserData={fetchUserData} />}
+          {activepage === 'accountsettings' && <AccountSettings user={user} fetchUserData={() => fetchUserData(user.username)} />}
           {activepage === 'changepassword' && <ChangePassword />}
           {activepage === 'yourbooks' && <YourBooks />}
           {activepage === 'writebook' && isPremium && <WriteBook />}

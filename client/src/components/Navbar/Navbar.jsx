@@ -83,10 +83,7 @@ const Navbar = ({ handleOrderPopup }) => {
                     href={"/#home"}
                     className="flex h-[72px] items-center gap-[2px]"
                   >
-                    Quick Links{" "}
-                    <span>
-                      <FaCaretDown className="transition-all duration-200 group-hover:rotate-180" />
-                    </span>
+                   
                   </a>
                   <div className="absolute -left-9 z-[9999] hidden w-[150px] rounded-md bg-white p-2 text-black group-hover:block  ">
                     <ul className="space-y-3">
@@ -146,7 +143,7 @@ const Navbar = ({ handleOrderPopup }) => {
                     <Dropdown.Toggle variant="" id="dropdown-basic">
                       <FaRegUser size={25} />
                     </Dropdown.Toggle>
-                    <Dropdown.Menu className="absolute flex flex-col gap-2 p-3 h-20 border rounded-lg bg-[#dbf44c97]">
+                    <Dropdown.Menu style={{ zIndex: 1050, position: 'absolute', flex: 'flex-col', gap: '2', p: '3', height: '20', border: 'border', borderRadius: 'rounded-lg', backgroundColor: '#dbf44c97' }}className="zIndex: 1050 absolute flex flex-col gap-2 p-3 h-20 border rounded-lg bg-[#dbf44c97]">
                       <Dropdown.Item
                         href={`/user/${uData?.username}/accountsettings`}
                       >

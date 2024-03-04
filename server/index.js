@@ -27,11 +27,12 @@ mongoose.connect(
   //exp-proj-db in mongodb -> browser collection
   // process.env.MONGO_URL,
   // "mongodb+srv://exp:exp123@clusterexp.xw5sehz.mongodb.net/session-exp?retryWrites=true&w=majority",
-  "mongodb+srv://exp:explore@explorecluster.yweprwi.mongodb.net/expdb?retryWrites=true&w=majority",
-  //  "mongodb+srv://exp:exp@cluster0.wpeuved.mongodb.net/session-exp?retryWrites=true&w=majority",
+  //"mongodb+srv://exp:explore@explorecluster.yweprwi.mongodb.net/expdb?retryWrites=true&w=majority",
+    "mongodb+srv://exp:exp@cluster0.wpeuved.mongodb.net/session-exp?retryWrites=true&w=majority",
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false,
   },
   () => {
     console.log("\nDB connected");
@@ -50,7 +51,10 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     isPremium: { type: Boolean, required: true, default: false }, // Indicates premium status
     expiryDate: { type: String, required: false }, // Indicates premium expiry
-    role2: { type: String, required: true, default: "user" }, // New field for premium status
+    role2: { type: String, required: true, default: "user" }, // New field for premium status   
+   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TBook' }], // Reference to TBook  model
+   
+    
   },
   { timestamps: true }
 );
@@ -235,6 +239,7 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+   
   },
   { timestamps: true }
 );
@@ -377,6 +382,9 @@ app.post(
     }
   }
 );
+
+
+
 
 const delBookSchema = new mongoose.Schema(
   {
@@ -1080,24 +1088,62 @@ app.post("/get-user", async (req, res) => {
   }
 });
 
-app.post("/get-username", async (req, res) => {
-  const { username } = req.body;
-  console.log(username);
-  try {
-    const userInfo = await User.findOne({ username });
+app.get('/get-username', async (req, res) => {
+  const { username } = req.query; // Use req.query to access query parameters for GET requests
 
-    if (!userInfo) {
-      return res.send({ message: "User doesn't exist!", status: 400 });
+  try {
+    const user = await User.findOne({ username: username });
+    if (user) {
+      res.json({ user: user });
+    } else {
+      res.status(404).json({ message: "User doesn't exist!" });
     }
-    return res.send({
-      message: "User data found",
-      status: "ok",
-      user: userInfo,
-    });
   } catch (error) {
-    console.log(error);
+    console.error('Error fetching user:', error);
+    res.status(500).json({ message: 'Failed to fetch user data' });
   }
 });
+
+
+
+
+app.post("/update-name", async (req, res) => {
+  const { userId, name } = req.body;
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: { name: name } },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "Name updated successfully", updatedUser });
+  } catch (error) {
+    console.error("Error updating user name:", error);
+    res.status(500).json({ message: "Internal Server Error", error });
+  }
+});
+
+app.post("/update-username", async (req, res) => {
+  const { userId, username } = req.body;
+  try {
+    const user = await User.findByIdAndUpdate(userId, { username: username }, { new: true });
+    if (user) {
+      res.json({ message: "Username updated successfully", user });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error("Error updating the username:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
 app.post(
   "/upload-user-pfp",
   upload.fields([{ name: "profileimage", maxCount: 1 }]),
@@ -1228,9 +1274,19 @@ const testbookSchema = new mongoose.Schema(
         },
       },
     ],
+    ratings: [{
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: false,
+        ref: "User",
+      },
+      rating: { type: Number, required: true }
+    }],
   },
   { timestamps: true }
 );
+
+
 
 const TBook = mongoose.model("TBook", testbookSchema);
 
@@ -1275,6 +1331,70 @@ app.post(
     return res.send({ message: "Added Book Successfully!", status: "ok" });
   }
 );
+
+//rating
+app.post('/submit-rating', async (req, res) => {
+  const { bkName, userId, rating } = req.body;
+  try {
+    const book = await TBook.findOne({ bkName });
+    if (!book) {
+      return res.status(404).json({ message: 'Book not found' });
+    }
+    // Check if the user has already rated, update rating if so, else add new rating
+    const existingRatingIndex = book.ratings.findIndex(r => r.userId.toString() === userId);
+    if (existingRatingIndex !== -1) {
+      book.ratings[existingRatingIndex].rating = rating;
+    } else {
+      book.ratings.push({ userId, rating });
+    }
+    await book.save();
+    res.json({ message: 'Rating submitted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error submitting rating', error });
+  }
+});
+
+//comments
+const commentSchema = new mongoose.Schema({
+  bkName: { type: String, required: true },
+  username: { type: String, required: true },
+  comment: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Comment = mongoose.model('Comment', commentSchema);
+app.post('/submit-comment', async (req, res) => {
+  const { bkName, username, comment } = req.body;
+
+  try {
+    const newComment = new Comment({
+      bkName,
+      username,
+      comment
+    });
+
+    await newComment.save();
+    res.json({ message: 'Comment added successfully!' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to add comment', error: error.toString() });
+  }
+});
+
+app.get('/comments/:bkName', async (req, res) => {
+  const { bkName } = req.params;
+
+  try {
+    const comments = await Comment.find({ bkName }).sort({ createdAt: -1 });
+    res.json(comments);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to fetch comments', error: error.toString() });
+  }
+});
+
+
 // app.post("/text-addbookchp", async (req, res) => {
 app.post("/text-addbookchp", async (req, res) => {
   const { bkName, title, content } = await req.body;
@@ -1432,6 +1552,88 @@ app.get("/get-random-books", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: "Internal Server Error" });
+  }
+});
+
+// favraite books
+// Endpoint to add a book to favorites
+app.post('/add-to-favorites', async (req, res) => {
+  const { userId, bookId } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if the book is already in favorites
+    if (!user.favorites.includes(bookId)) {
+      user.favorites.push(bookId);
+      await user.save();
+      res.json({ message: 'Book added to favorites' });
+    } else {
+      res.status(400).json({ message: 'Book is already in favorites' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error adding book to favorites', error: error.toString() });
+  }
+});
+// Endpoint to remove a book from favorites
+app.post('/remove-from-favorites', async (req, res) => {
+  const { userId, bookId } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if the book is in favorites before attempting to remove it
+    if (user.favorites.includes(bookId)) {
+      user.favorites.pull(bookId); // mongoose method to remove item from array
+      await user.save();
+      res.json({ message: 'Book removed from favorites' });
+    } else {
+      res.status(400).json({ message: 'Book is not in favorites' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error removing book from favorites', error: error.toString() });
+  }
+});
+app.post('/is-favorited', async (req, res) => {
+  const { userId, bookId } = req.body;
+  
+  try {
+      const user = await User.findById(userId);
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      const isFavorited = user.favorites.includes(bookId);
+      res.json({ isFavorited });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error', error: error.toString() });
+  }
+});
+
+
+
+app.get('/user-favorites/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findById(userId).populate('favorites');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ favorites: user.favorites });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching favorite books', error: error.toString() });
   }
 });
 

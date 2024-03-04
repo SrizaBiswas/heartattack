@@ -3,8 +3,10 @@ import './LegalNotice.css'
 
 const LegalNotice = () => {
     return (
-        <div className='legalnotice'>
-            <h1 className='mainhead1'>Legal Notice</h1>
+        <div className="container">
+        <div className="text-center mb-10 max-w-[600px] mx-auto">
+          <h1 className="text-3xl font-bold">Legal Notice</h1>
+        </div>
 
             <div className='legalnoticein'>
                 <h2>1. Terms of Use</h2>

@@ -1,4 +1,60 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+
+const YourBooks = () => {
+  const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      setLoading(true);
+      try {
+        // Assuming you store user ID in local storage or manage via context/auth
+        const userId = JSON.parse(localStorage.getItem('user'))._id;
+        const response = await axios.get(`http://localhost:3001/user-favorites/${userId}`);
+        setFavorites(response.data.favorites);
+      } catch (error) {
+        console.error('Error fetching favorite books:', error);
+        // Handle error (e.g., display a message)
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFavorites();
+  }, []); // Empty dependency array means this effect runs once on mount
+
+  if (loading) return <div>Loading your favorite books...</div>;
+
+  return (
+    
+    <div className="container">
+    <div className="text-center mb-10 max-w-[600px] mx-auto">
+      <h1 className="text-3xl font-bold">Your Favraite Books</h1>
+    </div>
+      {favorites.length > 0 ? (
+        <ul>
+          {favorites.map((book) => (
+            <li key={book._id}>
+              <img src={book.bkImagePath} alt={book.bkName} style={{width: '100px', height: '150px'}} /> {/* Adjust image path as necessary */}
+              <h3>{book.bkName}</h3>
+              <p>{book.authName}</p>
+              {/* Additional book details here */}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>You have no favorite books.</p>
+      )}
+    </div>
+  );
+};
+
+export default YourBooks;
+
+
+
+{/*import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Loading from "../../loading";
 import { Link } from "react-router-dom";
@@ -53,7 +109,7 @@ export const BooksCard = (props) => {
   return (
     <>
       <div className=" div  w-auto h-auto flex flex-col gap-5 shadow-xl text-black scale-90 hover:scale-95 hover:bg-orange-500 ease-in-out duration-300 rounded-xl active:scale-90 overflow-hidden">
-        {/* <div className="w-full h-[85%] bg-[#F8F8F8] overflow-hidden"> */}
+        {/* <div className="w-full h-[85%] bg-[#F8F8F8] overflow-hidden"> 
         <Link
           to={`/admin/books/book-detail/${i?.bkname ?? "name"}`}
           target="_parent"
@@ -65,7 +121,7 @@ export const BooksCard = (props) => {
             className="h-[220px] w-[150px] object-cover rounded-md"
           />
         </Link>
-        {/* </div> */}
+        {/* </div> *
         <div>
           <h3 className="font-semibold dark:text-white">
             {i.bkname ?? "name"}
@@ -76,3 +132,41 @@ export const BooksCard = (props) => {
     </>
   );
 };
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+
+const YourBooks = () => {
+  const [favorites, setFavorites] = useState([]);
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const userId = /* logic to get user id *
+        const response = await axios.get(`http://localhost:3001/get-favorites/${userId}`);
+        setFavorites(response.data.favorites);
+      } catch (error) {
+        console.error('Error fetching favorites', error);
+      }
+    };
+
+    fetchFavorites();
+  }, []);
+
+  return (
+    <div>
+      {/* Render favorite books here 
+      {favorites.map(book => (
+        <div key={book._id}>
+          {/* Render book details 
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default YourBooks;
+
+
+<button onClick={addToFavorites} className="favorite-button">
+Add to Favorites
+</button>*/}

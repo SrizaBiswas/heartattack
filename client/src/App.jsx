@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer.jsx";
 import Home from "./components/Home.jsx";
+import About from "./components/About/About.jsx";
 import OrderPopup from "./components/OrderPopup/OrderPopup.jsx";
 import Login from "./components/login";
 import Register from "./components/register";
@@ -141,6 +143,10 @@ const App = () => {
             path="/admin/books/audiobook-detail/:audioBkName"
             element={<AudiobookDetail />}
           />
+           <Route
+            path="/about/about.jsx"
+            element={<About />}
+          />
           <Route
             path="/admin/books/magazines-detail/:magName"
             element={<MagazineDetails />}
@@ -158,6 +164,8 @@ const App = () => {
           <Route path="/audiobk" element={<Audiobk />} />
           <Route path="/magasearch" element={<Magasearch />} />
           <Route path="/audiobookslider" element={<AudiobookSlider />} />
+          <Route path="/about" element={<About/>} /> 
+
           {/* <Route path="/bookslider/books" element={<Books />} /> */}
           <Route path="/test" element={<TestFile />} />
           <Route path="/profile" element={<UserProfile />} />
@@ -166,7 +174,7 @@ const App = () => {
           <Route path="/test-add-book" element={<TestAddBook />} />
           <Route path="/test-chp/:bkName" element={<AddBookChapters />} />
           <Route path="/bookview/:bkName" element={<BookView />} />
-          <Route path="/authorprofile/:username" element={<AuthorProfile />} />
+
         </Routes>
       </Router>
       <Footer />
@@ -195,3 +203,15 @@ export const admin_href =
     "http://localhost:5173/admin/books/audiobook-detail/:audioBkName";
 window.location.href ==
   "http://localhost:5173/admin/books/magazines-detail/:magName";
+
+
+
+
+
+
+
+
+
+
+
+  

@@ -176,7 +176,10 @@ const Premium = () => {
 
   return (
     <div className="premium-container">
-      <h2>Premium Subscriptions</h2>
+    <div className="text-center mb-10 max-w-[600px] mx-auto">
+      <h1 className="text-3xl font-bold">Premium Subscriptions</h1>
+    </div>
+    
       {isUserPremium() ? (
         <PremiumStatus expiryDate={user.expiryDate} />
       ) : (

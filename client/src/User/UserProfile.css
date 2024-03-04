@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
 .userprofile {
     display: flex;
     flex-direction: column;
@@ -126,3 +128,49 @@
         min-height: 0;
     }
 }
+@keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+ 
+  @keyframes textColorChange {
+    0%, 100% {
+      color: #007bff; /* Starting color */
+    }
+    50% {
+      color: #ff4081; /* Mid-transition color */
+    }
+  }
+  
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-10px);
+    }
+    60% {
+      transform: translateY(-5px);
+    }
+  }
+  
+  .welcome-message {
+    font-family: 'Pacifico';
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    animation: textColorChange 4s infinite;
+  }
+ 
+  .emoji {
+    display: inline-block;
+    animation: bounce 3s infinite;
+  }
+  
