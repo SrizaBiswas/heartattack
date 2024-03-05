@@ -131,7 +131,7 @@ const BookDetail = () => {
       try {
         await axios.post("http://localhost:3001/submit-comment", {
           bkName: bookDetail.bkName,
-          profileimage: bookDetail.profileimage,
+          profileimage: uData.profileimage,
           username: uData.username,
           comment: newComment,
         });
@@ -480,18 +480,19 @@ const BookDetail = () => {
                   </div> */}
 
                   {isPremium && (
-                    <div className="comment-form-container">
+                    <form className="comment-form-container" onSubmit={submitComment}>
                       <input
                         type="text"
-                        className="input-class placeholder-white"
+                        className="input-class placeholder-white outline-none shadow-sm shadow-primary"
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
                         placeholder="Write a comment..."
+                        required
                       />
-                      <button className="button-class" onClick={submitComment}>
+                      <button type="submit" className="border p-2 rounded-xl bg-primary hover:-translate-y-1 active:translate-y-1 shadow-sm shadow-primary ease-in-out duration-200">
                         Submit Comment
                       </button>
-                    </div>
+                    </form>
                   )}
 
                   <button
@@ -504,16 +505,13 @@ const BookDetail = () => {
                   {commentOpen && (
                     <div className="opacity-100 ease-in-out duration-200 mt-5 h-auto shadow-xl flex flex-col gap-1 p-4 border rounded-lg bg-white dark:bg-neutral-700 dark:text-white text-black">
                       {comments.length > 0 ? (
-                        comments.map((comment, index) => (
-                          <div key={index} className="flex gap-10">
+                        comments.map((comment) => (
+                          <div key={comment?._id} className="flex gap-10">
                             <div className="w-20 h-20 rounded-full overflow-hidden">
                               <div className="comment-profile-pic">
                                 <img
-                                  src={
-                                    comment?.profileimage ||
-                                    "/path/to/default/profile.jpg"
-                                  }
-                                  alt={`${comment.username}'s profile`}
+                                  src={comment?.profileimage ?? "/assests/booksanime-ezgif.com-crop.gif"}
+                                  alt={`${comment?.username}'s profile`}
                                   className="profile-photo"
                                 />
                               </div>

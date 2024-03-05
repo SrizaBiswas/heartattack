@@ -1428,7 +1428,7 @@ const commentSchema = new mongoose.Schema({
   profileimage: {
     type: String,
     required: true,
-    default: "/assets/booksanime-ezgif.com-crop.gif",
+    default: "/assests/booksanime-ezgif.com-crop.gif",
   },
   bkName: { type: String, required: true },
   username: { type: String, required: true },
