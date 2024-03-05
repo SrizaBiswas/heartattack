@@ -599,6 +599,26 @@ app.post("/get-audiobk", async (req, res) => {
     console.log(error);
   }
 });
+
+//get delaudiobook
+app.post("/get-delaudiobk", async (req, res) => {
+  const { delaudiobooks } = await req.body;
+  console.log(delaudiobooks);
+  try {
+    // if (books == "books") {
+    const delaudiobookInfo = await DelAudiobook.find({}); //Book is from where is it from database (user)
+
+    if (!delaudiobookInfo) {
+      return res.send({ message: "No book in DB!" });
+    }
+    // console.log(bookInfo);
+    return res.send({ message: "Data found", data: delaudiobookInfo }); // data used from and where
+    // }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 //latest-audiobooks
 
 app.post("/get-latest-audiobooks", async (req, res) => {
@@ -900,6 +920,24 @@ app.post("/get-dbuser", async (req, res) => {
     }
     console.log(userInfo);
     return res.send({ message: "Data found", data: userInfo }); // data used from and where
+    // }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.post("/get-deluser", async (req, res) => {
+  const { delusers } = await req.body;
+  console.log(delusers);
+  try {
+    // if (books == "books") {
+    const deluserInfo = await DelUser.find({}); //Book is from where is it from database (deluser)
+
+    if (!deluserInfo) {
+      return res.send({ message: "No book in DB!" });
+    }
+    console.log(deluserInfo);
+    return res.send({ message: "Data found", data: deluserInfo }); // data used from and where
     // }
   } catch (error) {
     console.log(error);

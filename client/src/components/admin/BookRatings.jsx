@@ -71,7 +71,9 @@ const BookRatings = () => {
               <h3 className="text-lg font-semibold">Users</h3>
               <ul className="list-disc ml-4">
                 {book.ratings.map((rating) => (
-                  <li key={rating.userId}>{rating.userId}</li>
+                  <li key={rating.userId}>
+                    {rating.username}={rating.rating}
+                  </li>
                 ))}
               </ul>
             </div>

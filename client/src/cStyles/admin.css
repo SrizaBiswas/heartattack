@@ -670,6 +670,18 @@ a {
   margin-left: 2%;
   margin-right: 2%;
 }
+.tcards {
+  /* display: flex;
+  flex-direction: columns;
+
+  gap: 40px; */
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  margin: 15px 0;
+  margin-left: 2%;
+  margin-right: 2%;
+}
 .bkcard {
   /* width: 50%;
   height: 150px;
@@ -694,6 +706,9 @@ a {
 
 .bkcard:nth-child(2) {
   background-color: #ff6d00;
+}
+.bkcard:nth-child(3) {
+  background-color: #2e7d32;
 }
 
 .table {
