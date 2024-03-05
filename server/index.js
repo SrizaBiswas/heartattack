@@ -1304,6 +1304,10 @@ const testbookSchema = new mongoose.Schema(
         type: String,
         required: false,
       },
+      username: {
+        type: String,
+        required: false,
+      },
       rating: { type: Number, required: true }
     }],
 >>>>>>> fc59a496f78ff2a060ae4c2536b3ec0217f1be03
