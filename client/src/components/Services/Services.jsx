@@ -97,7 +97,7 @@ const Services = () => {
                     >
                       <button
                         className="bg-primary hover:scale-105 duration-300 text-white py-1 px-4 rounded-full mt-4 group-hover:bg-white group-hover:text-primary"
-                        // onClick={handleOrderPopup}
+                      // onClick={handleOrderPopup}
                       >
                         Read Now
                       </button>
@@ -106,10 +106,10 @@ const Services = () => {
                 </div>
               ))}
           </div>
-          <div>
+          <div className="w-full flex items-center justify-center">
             <a
               href={"/magasearch"}
-              className=" text-center bg-gradient-to-r cursor-pointer from-primary to-secondary hover:scale-105 duration-200 text-white py-1 px-2 rounded-full flex gap-3 w-40"
+              className="w-40 h-14 flex gap-3 items-center justify-center bg-gradient-to-r cursor-pointer from-primary to-secondary hover:scale-105 duration-200 text-white py-1 px-2 rounded-full active:scale-95"
             >
               Explore More
             </a>

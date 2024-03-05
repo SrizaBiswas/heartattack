@@ -43,7 +43,11 @@ mongoose.connect(
 const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    profileimage: { type: String, required: false },
+    profileimage: {
+      type: String,
+      required: true,
+      default: "/assets/booksanime-ezgif.com-crop.gif",
+    },
     role: { type: String, required: true },
     username: { type: String, required: true, unique: true },
     gender: { type: String, required: true },
@@ -781,14 +785,15 @@ app.post(
         return res.send({ message: "magazine doesn't exists!" });
       }
 
-      console.log(
-        //   magName,
-        //   audioAuthName,
-        //   audioBkGenre,
-        //   audioDesp,
-        magImage
-        //   magCon
-      );
+      // console.log(
+      //   magName,
+      //   audioAuthName,
+      //   audioBkGenre,
+      //   audioDesp,
+      // magImage
+      // magazineInfo
+      //   magCon
+      // );
 
       if (magAuthName) magazineInfo.magAuthName = magAuthName;
       if (magGenre) magazineInfo.magGenre = magGenre;
@@ -797,16 +802,19 @@ app.post(
       let magImagePath = "";
       let magConPath = "";
 
+      // console.log(magImage.originalname);
       if (magImage && magImage.originalname) {
         const buffermagImage = magImage.buffer;
-        const magImagePathPublic = `../client/public/users/magazineCover/${
+
+        const magImagePathPublic = `../client/public/users/magzineCover/${
           magName + "_" + magImage.originalname
-        }`; //why is ` used??
+        }`;
         await writeFile(magImagePathPublic, buffermagImage);
 
         magImagePath = `/users/magazineCover/${
           magName + "_" + magImage.originalname
         }`;
+        // updating
         magazineInfo.magImage = magImagePath;
       }
 
@@ -820,6 +828,7 @@ app.post(
         magConPath = `/users/magazineCon/${
           magName + "_" + magCon.originalname
         }`;
+        // updating
         magazineInfo.magCon = magConPath;
       }
 
@@ -876,14 +885,12 @@ const DelMagazine = new mongoose.model("DelMagazine", delMagazineSchema);
 app.post("/delmagazine", async (req, res) => {
   try {
     const { magName } = req.body;
-    console.log(magName);
-    const magazineExist = await Magazine.findOne({
-      magName: magName,
-    });
-    console.log(magazineExist);
+    // console.log(magName);
+    const magazineExist = await Magazine.findOne({ magName });
     if (!magazineExist) {
       return res.send({ message: "magazine doesn't exists!" });
     }
+    // console.log(magazineExist);
 
     const delmagazine = new DelMagazine({
       magName: magazineExist.magName,
@@ -892,10 +899,10 @@ app.post("/delmagazine", async (req, res) => {
       magGenre: magazineExist.magGenre,
       magDesp: magazineExist.magDesp,
       magCon: magazineExist.magCon,
+      role: magazineExist.role,
     });
 
     await delmagazine.save();
-
     await Magazine.deleteOne({ magName });
 
     return res.send({
@@ -918,7 +925,7 @@ app.post("/get-dbuser", async (req, res) => {
     if (!userInfo) {
       return res.send({ message: "No book in DB!" });
     }
-    console.log(userInfo);
+    // console.log(userInfo);
     return res.send({ message: "Data found", data: userInfo }); // data used from and where
     // }
   } catch (error) {
@@ -1122,10 +1129,15 @@ app.post("/delaudiobook", async (req, res) => {
 });
 
 app.post("/get-user", async (req, res) => {
-  const { email } = req.body;
-  // console.log(email);
+  const { email, username } = req.body;
+  // console.log(username);
   try {
-    const userInfo = await User.findOne({ email });
+    let userInfo;
+    if (username) {
+      userInfo = await User.findOne({ username });
+    } else {
+      userInfo = await User.findOne({ email });
+    }
 
     if (!userInfo) {
       return res.send({ message: "User doesn't exist!", status: 400 });
@@ -1143,8 +1155,10 @@ app.post("/get-user", async (req, res) => {
 app.get("/get-username", async (req, res) => {
   const { username } = req.query; // Use req.query to access query parameters for GET requests
 
+  console.log(username);
+
   try {
-    const user = await User.findOne({ username: username });
+    const user = await User.findOne({ username });
     if (user) {
       res.json({ user: user });
     } else {
@@ -1312,10 +1326,6 @@ const testbookSchema = new mongoose.Schema(
     },
     chapters: [
       {
-        // id: {
-        //   type: Number,
-        //   required: false,
-        // },
         title: {
           type: String,
           required: false,
@@ -1415,6 +1425,11 @@ app.post("/submit-rating", async (req, res) => {
 
 //comments
 const commentSchema = new mongoose.Schema({
+  profileimage: {
+    type: String,
+    required: true,
+    default: "/assets/booksanime-ezgif.com-crop.gif",
+  },
   bkName: { type: String, required: true },
   username: { type: String, required: true },
   comment: { type: String, required: true },
@@ -1422,12 +1437,14 @@ const commentSchema = new mongoose.Schema({
 });
 
 const Comment = mongoose.model("Comment", commentSchema);
+
 app.post("/submit-comment", async (req, res) => {
-  const { bkName, username, comment } = req.body;
+  const { bkName, profileimage, username, comment } = req.body;
 
   try {
     const newComment = new Comment({
       bkName,
+      profileimage,
       username,
       comment,
     });
@@ -1554,21 +1571,52 @@ app.post("/text-addbookchp", async (req, res) => {
 //edit chapter
 app.post("/edit-chp", async (req, res) => {
   try {
-    const { bkName, title, content } = req.body;
-    console.log(req.body);
-    console.log(bkName);
-    const bookInfo = await TBook.findOne({ bkName: bkName });
+    const { bkName, oldtitle, oldcontent, title, content } = req.body;
+    console.log(title, content);
+    console.log(bkName, oldtitle);
+    const bookInfo = await TBook.findOneAndUpdate(
+      { bkName: bkName, "chapters.title": oldtitle },
+      {
+        $set: {
+          "chapters.$.title": title ? title : oldtitle,
+          "chapters.$.content": content ? content : oldcontent,
+        },
+      },
+      { new: true } // Return the modified document
+    );
+    console.log(bookInfo);
 
     if (!bookInfo) {
       return res.send({ message: "book doesn't exists!" });
     }
-    console.log(bookInfo.chapters.title);
-    if (title) bookInfo.chapters.title = title;
-    if (content) bookInfo.chapters.content = content;
+    await bookInfo.save();
+    return res.send({ message: "Book edited Successfully!", status: "ok" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "Internal Server Error" });
+  }
+});
+app.post("/del-chp", async (req, res) => {
+  try {
+    const { bkName, title } = req.body;
+    console.log(bkName, title);
+    const bookInfo = await TBook.findOneAndUpdate(
+      { bkName: bkName, "chapters.title": title },
+      {
+        $pull: {
+          chapters: { title: title },
+        },
+      },
+      { new: true } // Return the modified document
+    );
+    console.log(bookInfo);
 
+    if (!bookInfo) {
+      return res.send({ message: "book doesn't exists!" });
+    }
     await bookInfo.save();
 
-    return res.send({ message: "Book edited Successfully!", status: "ok" });
+    return res.send({ message: "Book deleted Successfully!", status: "ok" });
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "Internal Server Error" });
@@ -1648,21 +1696,22 @@ app.post("/edit-user", async (req, res) => {
     const { name, username, role, isPremium, gender, dob, email, password } =
       req.body;
 
+    console.log(email);
     // const bkImg = req.files["bkImg"] ? req.files["bkImg"][0] : null;
     // const bkCon = req.files["bkCon"] ? req.files["bkCon"][0] : null;
 
-    const userInfo = await User.findOne({ email: email });
+    const userInfo = await User.findOne({ email });
     if (!userInfo) {
       return res.send({ message: "user doesn't exists!" });
     }
 
+    // if (username) userInfo.username = username;
+    // if (isPremium) userInfo.isPremium = isPremium;
+    if (password) userInfo.password = password;
     if (name) userInfo.name = name;
-    if (username) userInfo.username = username;
     if (role) userInfo.role = role;
-    if (isPremium) userInfo.isPremium = isPremium;
     if (gender) userInfo.gender = gender;
     if (dob) userInfo.dob = dob;
-    if (password) userInfo.password = password;
 
     // let bkImgPath = "";
     // // let bkConPath = "";

@@ -172,6 +172,7 @@ const App = () => {
             element={<ResetPassword />}
           />
           <Route path="/userprofile" element={<UserProfile />} />
+          <Route path="/autor-profile/:authName" element={<AuthorProfile />} />
           <Route path="/allbooks" element={<AllBooks />} />
           <Route path="/audiobk" element={<Audiobk />} />
           <Route path="/magasearch" element={<Magasearch />} />
@@ -215,8 +216,8 @@ export const admin_href =
   window.location.href == "http://localhost:5173/admin/magaratings" ||
   window.location.href == "http://localhost:5173/admin/transaction" ||
   window.location.href ==
-    "http://localhost:5173/admin/books/book-detail/:bkname" ||
+  "http://localhost:5173/admin/books/book-detail/:bkname" ||
   window.location.href ==
-    "http://localhost:5173/admin/books/audiobook-detail/:audioBkName";
+  "http://localhost:5173/admin/books/audiobook-detail/:audioBkName";
 window.location.href ==
   "http://localhost:5173/admin/books/magazines-detail/:magName";

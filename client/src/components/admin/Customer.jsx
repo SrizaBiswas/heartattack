@@ -117,9 +117,8 @@ const Customer = () => {
         </div>
       </div>
       <div
-        className={`${
-          editOpen ? "opacity-100" : "opacity-0 hidden"
-        } absolute mt-20 w-full h-full backdrop-blur-sm flex justify-center z-50`}
+        className={`${editOpen ? "opacity-100" : "opacity-0 hidden"
+          } absolute mt-20 w-full h-full backdrop-blur-sm flex justify-center z-50`}
       >
         <UserDetail
           setEditOpen={setEditOpen}
@@ -176,19 +175,28 @@ export const UserDetail = (props) => {
   const edituser = (e) => {
     e.preventDefault();
 
-    const data = new FormData();
-    data.set("name", userDetail?.name);
-    data.set("username", user?.username);
-    data.set("role", user?.role);
-    data.set("isPremium", user?.isPremium);
-    data.set("gender", user?.gender);
-    data.set("dob", user?.dob);
-    data.set("email", user?.email);
-    data.set("password", user?.password);
+    // const data = new FormData();
+    // data.set("email", userDetail?.email);
+    // data.set("password", user?.password);
+    // data.set("name", userDetail?.name);
+    // data.set("username", user?.username);
+    // data.set("role", user?.role);
+    // data.set("isPremium", user?.isPremium);
+    // data.set("gender", user?.gender);
+    // data.set("dob", user?.dob);
 
     // data.set("bkCon", bkCon);
 
-    axios.post("http://localhost:3001/edit-user", data).then((res) => {
+    axios.post("http://localhost:3001/edit-user", {
+      email: userDetail?.email,
+      username: userDetail?.username,
+      isPremium: userDetail?.isPremium,
+      password: user?.password,
+      name: user.name,
+      role: user.role,
+      gender: user.gender,
+      dob: user.dob,
+    }).then((res) => {
       alert(res.data.message);
       if (res.data.status == "ok") {
         fetchusers();
@@ -229,7 +237,8 @@ export const UserDetail = (props) => {
           name="username"
           value={user.username}
           onChange={handleChange}
-          className="w-[80%] h-[3rem] border shadow-xl rounded-lg bg-[#FAEBD7] placeholder:text-black text-black p-2 outline-none focus:scale-105"
+          disabled
+          className="w-[80%] h-[3rem] border shadow-xl rounded-lg placeholder:text-black text-black p-2"
           placeholder={userDetail?.username ?? "user-username"}
         />
         <input
@@ -248,9 +257,8 @@ export const UserDetail = (props) => {
           // onChange={handleChange}
           className="w-[80%] h-[3rem] border shadow-xl rounded-lg placeholder:text-black text-black p-2"
           disabled
-          placeholder={
-            userDetail?.isPremium ? "True" : "False" ?? "book-isPremium"
-          }
+          placeholder={`Premium subsription : ${userDetail?.isPremium ? "True" : "False" ?? "book-isPremium"}
+          `}
         />
 
         <input

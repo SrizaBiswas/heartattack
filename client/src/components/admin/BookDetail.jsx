@@ -10,6 +10,7 @@ const BookDetail = () => {
   const { bkname } = useParams(); // bkname???
   // console.log(decodeURIComponent(bkname));
   const uData = JSON.parse(window.localStorage.getItem("user"));
+  // console.log(uData);
   // Check if the user is premium
   const isPremium = uData?.isPremium;
 
@@ -21,6 +22,7 @@ const BookDetail = () => {
   const [comments, setComments] = useState([]);
   const [user, setUser] = useState(null);
   const [isFavorited, setIsFavorited] = useState(false);
+
 
   useEffect(() => {
     if (!bookDetail) {
@@ -83,7 +85,7 @@ const BookDetail = () => {
       console.log(error);
     }
   };
-
+  // console.log(bookDetail);
   useEffect(() => {
     if (!bookDetail) {
       fetchbooks();
@@ -129,6 +131,7 @@ const BookDetail = () => {
       try {
         await axios.post("http://localhost:3001/submit-comment", {
           bkName: bookDetail.bkName,
+          profileimage: bookDetail.profileimage,
           username: uData.username,
           comment: newComment,
         });
@@ -263,13 +266,15 @@ const BookDetail = () => {
       const response = await axios.get(
         `http://localhost:3001/comments/${encodeURIComponent(bkname)}`
       );
-      console.log(response.data); // Check the response
+      // console.log(response.data); // Check the response
       setComments(response.data || []); // Adjust according to your actual response structure
+      fetchbooks();
     } catch (error) {
       console.log("Error fetching comments:", error);
       setComments([]); // Fallback to an empty array in case of error
     }
   };
+  // console.log(comments);
 
   return (
     <>
@@ -308,9 +313,8 @@ const BookDetail = () => {
               </>
             )}
             <div
-              className={`${
-                editOpen ? "opacity-100" : "opacity-0 hidden"
-              } absolute mt-20 w-full h-full backdrop-blur-sm flex justify-center z-50`}
+              className={`${editOpen ? "opacity-100" : "opacity-0 hidden"
+                } absolute mt-20 w-full h-full backdrop-blur-sm flex justify-center z-50`}
             >
               <form className=" relative w-[50%] h-[40rem] shadow-2xl rounded-xl flex flex-col gap-2 items-center justify-center border">
                 <div
@@ -415,7 +419,7 @@ const BookDetail = () => {
                   </div>
                   <div className="space-x-8 flex justify-between mt-32 md:mt-0 md:justify-center">
                     <Link
-                      to={"#"}
+                      to={`/autor-profile/${bookDetail?.authName}`}
                       className="text-white w-30 h-20 py-2 px-4 flex items-center justify-center uppercase rounded bg-blue-400 dark:bg-amber-500 hover:bg-blue-500 dark:hover:bg-amber-600 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5 active:-translate-y-2"
                     >
                       View Author Profile
@@ -506,7 +510,7 @@ const BookDetail = () => {
                               <div className="comment-profile-pic">
                                 <img
                                   src={
-                                    comment.userProfilePhoto ||
+                                    comment?.profileimage ||
                                     "/path/to/default/profile.jpg"
                                   }
                                   alt={`${comment.username}'s profile`}

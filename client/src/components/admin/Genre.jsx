@@ -69,7 +69,7 @@ const Genre = () => {
                     <td>{i.magGenre}</td>
                     <td>{i.role}</td>
                     <td className="Mtbim">{i.magImage}</td>
-                    <td className="Mtbdesp">{i.magDesp}</td>
+                    <td className="Mtbcon">{i.magDesp}</td>
                     <td className="Mtbcon">{i.magCon}</td>
                     <td>
                       <div className=" w-full h-auto p-8 flex flex-col justify-center gap-5 text-white">
@@ -98,9 +98,8 @@ const Genre = () => {
         </div>
       </div>
       <div
-        className={`${
-          editOpen ? "opacity-100" : "opacity-0 hidden"
-        } absolute mt-20 w-full h-full backdrop-blur-sm flex justify-center z-50`}
+        className={`${editOpen ? "opacity-100" : "opacity-0 hidden"
+          } absolute mt-20 w-full h-full backdrop-blur-sm flex justify-center z-50`}
       >
         <MagazineDetail
           setEditOpen={setEditOpen}
