@@ -7,6 +7,7 @@ import {
   BsMenuButtonWideFill,
   BsFillGearFill,
 } from "react-icons/bs";
+import { TfiComments } from "react-icons/tfi";
 import { FaMoneyCheck } from "react-icons/fa";
 import { IoBookSharp } from "react-icons/io5";
 import { FaBook } from "react-icons/fa6";
@@ -53,11 +54,15 @@ function Sidebar({ openSidebarToggle, OpenSidebar }) {
           <FaMoneyCheck className="icon" /> Payments
         </a>
 
+        <a href="/admin/comments" className="sidebar-list-item">
+          <TfiComments className="icon" /> Comments
+        </a>
+
         <a href="/admin/inventory" className="sidebar-list-item">
           <BsListCheck className="icon" /> Inventory
         </a>
 
-        <a href="/admin" className="sidebar-list-item">
+        <a href="/admin/report" className="sidebar-list-item">
           <BsMenuButtonWideFill className="icon" /> Reports
         </a>
       </div>

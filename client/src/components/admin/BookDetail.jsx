@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { AiTwotoneDelete,AiFillHeart } from "react-icons/ai";
+import { AiTwotoneDelete, AiFillHeart } from "react-icons/ai";
 import { FaRegEdit } from "react-icons/fa";
 import { GiBlackBook } from "react-icons/gi";
 import BookView from "../BookView";
@@ -12,8 +12,6 @@ const BookDetail = () => {
   const uData = JSON.parse(window.localStorage.getItem("user"));
   // Check if the user is premium
   const isPremium = uData?.isPremium;
-  
-
 
   const [bookDetail, setBookDetail] = useState();
   const [commentOpen, setCommentOpen] = useState(false);
@@ -24,12 +22,6 @@ const BookDetail = () => {
   const [user, setUser] = useState(null);
   const [isFavorited, setIsFavorited] = useState(false);
 
-
-
-
-  
-  
-
   useEffect(() => {
     if (!bookDetail) {
       fetchbooks();
@@ -39,7 +31,6 @@ const BookDetail = () => {
     }
   }, [bookDetail]);
 
- 
   const [book, setBook] = useState({
     bkName: "",
     authName: "",
@@ -63,31 +54,35 @@ const BookDetail = () => {
   ];
   // const [bkCon, setBkCon] = useState(null);
   const [bkImagePath, setBkImagePath] = useState(null);
-  
 
   const fetchbooks = async () => {
     const bookColl = "books";
     try {
-        axios.post("http://localhost:3001/get-dbcollections", { bookColl })
-            .then(async (res) => {
-                const bkDetail = res.data.data.filter(book => book.bkName === decodeURIComponent(bkname))[0];
-                setBookDetail(bkDetail);
+      axios
+        .post("http://localhost:3001/get-dbcollections", { bookColl })
+        .then(async (res) => {
+          const bkDetail = res.data.data.filter(
+            (book) => book.bkName === decodeURIComponent(bkname)
+          )[0];
+          setBookDetail(bkDetail);
 
-                try {
-                  const favoriteResponse = await axios.post('http://localhost:3001/is-favorited', {
-                      userId: uData._id,
-                      bookId: bkDetail._id,
-                  });
-                  setIsFavorited(favoriteResponse.data.isFavorited); // Assuming the backend returns { isFavorited: true/false }
-              } catch (error) {
-                  console.error('Error checking favorite status', error);
+          try {
+            const favoriteResponse = await axios.post(
+              "http://localhost:3001/is-favorited",
+              {
+                userId: uData._id,
+                bookId: bkDetail._id,
               }
-              
-            });
+            );
+            setIsFavorited(favoriteResponse.data.isFavorited); // Assuming the backend returns { isFavorited: true/false }
+          } catch (error) {
+            console.error("Error checking favorite status", error);
+          }
+        });
     } catch (error) {
-        console.log(error);
+      console.log(error);
     }
-};
+  };
 
   useEffect(() => {
     if (!bookDetail) {
@@ -95,68 +90,71 @@ const BookDetail = () => {
     }
   });
 
-  
-//favoraite book
-const addToFavorites = async () => {
-  try {
-    const response = await axios.post('http://localhost:3001/add-to-favorites', {
-      userId: uData._id,
-      bookId: bookDetail._id,
-    });
-    console.log(response.data);
-    setIsFavorited(true); // Set isFavorited to true
-  } catch (error) {
-    console.error('Error adding book to favorites', error);
-  }
-};
+  //favoraite book
+  const addToFavorites = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3001/add-to-favorites",
+        {
+          userId: uData._id,
+          bookId: bookDetail._id,
+        }
+      );
+      console.log(response.data);
+      setIsFavorited(true); // Set isFavorited to true
+    } catch (error) {
+      console.error("Error adding book to favorites", error);
+    }
+  };
 
-const removeFromFavorites = async () => {
-  try {
-    const response = await axios.post('http://localhost:3001/remove-from-favorites', {
-      userId: uData._id,
-      bookId: bookDetail._id,
-    });
-    console.log(response.data);
-    setIsFavorited(false); // Set isFavorited to false
-  } catch (error) {
-    console.error('Error removing book from favorites', error);
-  }
-};
+  const removeFromFavorites = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3001/remove-from-favorites",
+        {
+          userId: uData._id,
+          bookId: bookDetail._id,
+        }
+      );
+      console.log(response.data);
+      setIsFavorited(false); // Set isFavorited to false
+    } catch (error) {
+      console.error("Error removing book from favorites", error);
+    }
+  };
 
-  
-  
   // Call fetchComments within useEffect where you fetch book details
   const submitComment = async () => {
     if (isPremium) {
-      
       try {
-        await axios.post('http://localhost:3001/submit-comment', {
+        await axios.post("http://localhost:3001/submit-comment", {
           bkName: bookDetail.bkName,
           username: uData.username,
           comment: newComment,
         });
         setNewComment(""); // Reset the input field after submission
-        window.alert('Your comment sumbitted successfully!');
+        window.alert("Your comment sumbitted successfully!");
 
         // Optionally, fetch the updated comments list here
       } catch (error) {
-        console.error('Error submitting comment', error);
+        console.error("Error submitting comment", error);
       }
     } else {
       alert("Only premium users can submit comments.");
     }
   };
 
-    
   // console.log(bookDetail?.chapters);
   const calculateAverageRating = () => {
     if (bookDetail && bookDetail.ratings && bookDetail.ratings.length > 0) {
-      const sum = bookDetail.ratings.reduce((accumulator, current) => accumulator + current.rating, 0);
+      const sum = bookDetail.ratings.reduce(
+        (accumulator, current) => accumulator + current.rating,
+        0
+      );
       const avg = sum / bookDetail.ratings.length;
       setAverageRating(avg.toFixed(1)); // Set the average rating, round to 1 decimal place
     }
   };
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -172,7 +170,7 @@ const removeFromFavorites = async () => {
     const data = new FormData();
     data.set("bkName", bookDetail?.bkName);
     data.set("authName", bookDetail?.authName);
-    data.set("bkImg", bkImagePath);
+    data.set("bkImagePath", bkImagePath);
     data.set("bkGenre", book.bkGenre);
     data.set("bkDesp", book.bkDesp);
     // data.set("bkCon", bkCon);
@@ -204,67 +202,74 @@ const removeFromFavorites = async () => {
   const StarRating = ({ rating, onRating }) => {
     return (
       <div className="rating-section">
-  <div className="star-rating">
-    {[...Array(5)].map((star, index) => {
-      index += 1;
-      return (
-        <button
-          key={index}
-          className={index <= userRating ? 'text-orange-500' : 'text-gray-400'}
-          onClick={() => onRating(index)}
-          style={{ fontSize: '24px' }} /* Adjust size directly if preferred */
-        >
-          ★
-        </button>
-      );
-    })}
-  </div>
-  <div className="your-rating-text">Your Rating</div>
-</div>
+        <div className="star-rating">
+          {[...Array(5)].map((star, index) => {
+            index += 1;
+            return (
+              <button
+                key={index}
+                className={
+                  index <= userRating ? "text-orange-500" : "text-gray-400"
+                }
+                onClick={() => onRating(index)}
+                style={{
+                  fontSize: "24px",
+                }} /* Adjust size directly if preferred */
+              >
+                ★
+              </button>
+            );
+          })}
+        </div>
+        <div className="your-rating-text">Your Rating</div>
+      </div>
     );
   };
-  
+
   const [userRating, setUserRating] = useState(0);
 
-// Mock function to handle rating submission - replace with your actual API call
-const submitRating = (newRating) => {
-  axios.post('http://localhost:3001/submit-rating', {
-    bkName: bookDetail.bkName,
-    userId: uData._id, // Assuming you store user ID in local storage or context
-    username:uData.username,
-    rating: newRating,
-  })
-  .then((response) => {
-    console.log(response.data);
-    setUserRating(newRating); // Update the local user rating state
-    // Optionally, refresh the book detail to fetch updated ratings
-  })
-  .catch((error) => console.error('Error submitting rating', error));
-};
+  // Mock function to handle rating submission - replace with your actual API call
+  const submitRating = (newRating) => {
+    axios
+      .post("http://localhost:3001/submit-rating", {
+        bkName: bookDetail.bkName,
+        userId: uData._id, // Assuming you store user ID in local storage or context
+        username: uData.username,
+        rating: newRating,
+      })
+      .then((response) => {
+        console.log(response.data);
+        setUserRating(newRating); // Update the local user rating state
+        // Optionally, refresh the book detail to fetch updated ratings
+      })
+      .catch((error) => console.error("Error submitting rating", error));
+  };
 
-useEffect(() => {
-  // Assuming bookDetail contains rating information
-  // Ensure bookDetail and bookDetail.ratings are defined before accessing them
-  if (bookDetail && bookDetail.ratings) {
-    const currentRating = bookDetail.ratings.find(rating => rating.userId === uData._id)?.rating;
-    if (currentRating) {
-      setUserRating(currentRating);
+  useEffect(() => {
+    // Assuming bookDetail contains rating information
+    // Ensure bookDetail and bookDetail.ratings are defined before accessing them
+    if (bookDetail && bookDetail.ratings) {
+      const currentRating = bookDetail.ratings.find(
+        (rating) => rating.userId === uData._id
+      )?.rating;
+      if (currentRating) {
+        setUserRating(currentRating);
+      }
     }
-  }
-}, [bookDetail]);
+  }, [bookDetail]);
 
-const fetchComments = async () => {
-  try {
-    const response = await axios.get(`http://localhost:3001/comments/${encodeURIComponent(bkname)}`);
-    console.log(response.data); // Check the response
-    setComments(response.data || []); // Adjust according to your actual response structure
-  } catch (error) {
-    console.log("Error fetching comments:", error);
-    setComments([]); // Fallback to an empty array in case of error
-  }
-};
-
-
+  const fetchComments = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/comments/${encodeURIComponent(bkname)}`
+      );
+      console.log(response.data); // Check the response
+      setComments(response.data || []); // Adjust according to your actual response structure
+    } catch (error) {
+      console.log("Error fetching comments:", error);
+      setComments([]); // Fallback to an empty array in case of error
+    }
+  };
 
   return (
     <>
@@ -357,15 +362,14 @@ const fetchComments = async () => {
                   <span className="w-[35%]">Update Cover Image : </span>
                   <input
                     type="file"
-                    name="bkImg"
+                    name="bkImagePath"
                     // value={bkCon}
                     accept=".jpg, .jpeg, .png"
                     required
                     placeholder={bookDetail?.bkImagePath ?? "bookcover"}
-                    onChange={(e) => setBkImagePath(e.target.files)}
+                    onChange={(e) => setBkImagePath(e.target.files[0])}
                     className="w-full h-full"
                   ></input>
-                  
                 </div>
                 {/* <div className="w-[80%] h-[3rem] flex gap-2 border shadow-xl rounded-lg text-black p-2 bg-[#FAEBD7]">
                     <span className="w-[35%]">Update Content : </span>
@@ -393,32 +397,21 @@ const fetchComments = async () => {
               <div className="p-8 bg-white dark:bg-neutral-700  shadow-lg mt-24 rounded-2xl">
                 <div className="grid grid-cols-1 md:grid-cols-3">
                   <div className="text-center">
-                    <div className="">
-                 
-
-      </div>
-    
-
+                    <div className=""></div>
 
                     <div className="rating-section">
-                      
-                       <StarRating rating={userRating} onRating={submitRating} />
-                      
-                   </div>
-                  
+                      <StarRating rating={userRating} onRating={submitRating} />
+                    </div>
                   </div>
 
                   <div className="relative">
-                    <div className="w-60 h-44 bg-indigo-100 mx-auto shadow-2xl relative inset-x-0 top-0 -mt-24 flex items-center justify-center">
+                    <div className="w-60 h-39 bg-indigo-100 mx-auto shadow-2xl relative inset-x-0 top-0 -mt-24 flex items-center justify-center">
                       <img
                         src={bookDetail?.bkImagePath ?? "img"}
                         alt=""
                         className="w-auto rounded-lg"
                       />
-                      
                     </div>
-                  
-                   
                   </div>
                   <div className="space-x-8 flex justify-between mt-32 md:mt-0 md:justify-center">
                     <Link
@@ -438,23 +431,28 @@ const fetchComments = async () => {
                 </div>
 
                 <div className="mt-20 text-center border-b pb-12 capitalize">
-
                   <h1 className="text-4xl font-semibold text-gray-700 dark:text-white">
                     {bookDetail?.bkName ?? "book-name"}
                   </h1>
-                  
-               {/* <button onClick={addToFavorites} className=" mt-4 favorite-button mx-auto shadow-2xl relative inset-x-0 top-0 -mt-24 flex items-center justify-center ">
+
+                  {/* <button onClick={addToFavorites} className=" mt-4 favorite-button mx-auto shadow-2xl relative inset-x-0 top-0 -mt-24 flex items-center justify-center ">
                 <AiFillHeart className="mr-2" /> Add to Favorites
                 </button>*/}
-  {isFavorited ? (
-  <button onClick={removeFromFavorites} className="mt-4 favorite-button mx-auto shadow-2xl relative inset-x-0 top-0 -mt-24 flex items-center justify-center">
-    <AiFillHeart className="mr-2" /> Remove from Favorites
-  </button>
-) : (
-  <button onClick={addToFavorites} className="mt-4 favorite-button mx-auto shadow-2xl relative inset-x-0 top-0 -mt-24 flex items-center justify-center">
-    <AiFillHeart className="mr-2" /> Add to Favorites
-  </button>
-)}
+                  {isFavorited ? (
+                    <button
+                      onClick={removeFromFavorites}
+                      className="mt-4 favorite-button mx-auto shadow-2xl relative inset-x-0 top-0 -mt-24 flex items-center justify-center"
+                    >
+                      <AiFillHeart className="mr-2" /> Remove from Favorites
+                    </button>
+                  ) : (
+                    <button
+                      onClick={addToFavorites}
+                      className="mt-4 favorite-button mx-auto shadow-2xl relative inset-x-0 top-0 -mt-24 flex items-center justify-center"
+                    >
+                      <AiFillHeart className="mr-2" /> Add to Favorites
+                    </button>
+                  )}
 
                   <p className="mt-4 text-gray-500 dark:text-gray-200">
                     {bookDetail?.bkGenre ?? "book-genre"}
@@ -464,73 +462,74 @@ const fetchComments = async () => {
                   </p>
                   {/* Display the average rating here */}
                   <p className="mt-1 text-gray-500 dark:text-gray-400">
-                     Rating: {averageRating} ★
+                    Rating: {averageRating} ★
                   </p>
                 </div>
-                <div className="mt-12 flex flex-col justify-center capitalize">
+                <div className="mt-4 flex flex-col border-b justify-center text-center capitalize">
                   <p className="text-black text-center font-light lg:px-16 dark:text-white">
                     {bookDetail?.bkDesp ?? "book-description"}
                   </p>
+                </div>
+                <div className="mt-12 flex flex-col justify-center capitalize">
                   {/* <div className="mt-10 border-b pb-12">
                     <BookView chapters={bookDetail?.chapters} />
                   </div> */}
-                  
+
                   {isPremium && (
-  <div className="comment-form-container">
-    <input
-      type="text"
-      className="input-class"
-      value={newComment}
-      onChange={(e) => setNewComment(e.target.value)}
-      placeholder="Write a comment..."
-    />
-    <button
-      className="button-class"
-      onClick={submitComment}
-    >
-      Submit Comment
-    </button>
-  </div>
-)} 
+                    <div className="comment-form-container">
+                      <input
+                        type="text"
+                        className="input-class placeholder-white"
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        placeholder="Write a comment..."
+                      />
+                      <button className="button-class" onClick={submitComment}>
+                        Submit Comment
+                      </button>
+                    </div>
+                  )}
 
-<button onClick={() => setCommentOpen(!commentOpen)} className="text-indigo-500 py-2 px-4 font-medium mt-4 dark:text-cyan-400">
-  Show comments
-</button>
+                  <button
+                    onClick={() => setCommentOpen(!commentOpen)}
+                    className="text-indigo-500 py-2 px-4 font-medium mt-4 dark:text-cyan-400"
+                  >
+                    Show comments
+                  </button>
 
-{commentOpen && (
-  <div className="opacity-100 ease-in-out duration-200 mt-5 h-auto shadow-xl flex flex-col gap-1 p-4 border rounded-lg bg-white dark:bg-neutral-700 dark:text-white text-black">
-    {comments.length > 0 ? (
-      comments.map((comment, index) => (
-        <div key={index} className="flex gap-10">
-          <div className="w-20 h-20 rounded-full overflow-hidden">
-          <div className="comment-profile-pic">
-  <img
-    src={comment.userProfilePhoto || "/path/to/default/profile.jpg"}
-    alt={`${comment.username}'s profile`}
-    className="profile-photo"
-  />
-</div>
-
-          </div>
-          <div className="flex flex-col gap-2">
-            <div className="text-xl text-primary justify-between">
-              <span>{comment.username}</span>
-            </div>
-            <p className="text-xl">{comment.comment}</p>
-          </div>
-        </div>
-      ))
-    ) : (
-      <p>No comments yet.</p>
-    )}
-  </div>
-)}
-
+                  {commentOpen && (
+                    <div className="opacity-100 ease-in-out duration-200 mt-5 h-auto shadow-xl flex flex-col gap-1 p-4 border rounded-lg bg-white dark:bg-neutral-700 dark:text-white text-black">
+                      {comments.length > 0 ? (
+                        comments.map((comment, index) => (
+                          <div key={index} className="flex gap-10">
+                            <div className="w-20 h-20 rounded-full overflow-hidden">
+                              <div className="comment-profile-pic">
+                                <img
+                                  src={
+                                    comment.userProfilePhoto ||
+                                    "/path/to/default/profile.jpg"
+                                  }
+                                  alt={`${comment.username}'s profile`}
+                                  className="profile-photo"
+                                />
+                              </div>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                              <div className="text-xl text-primary justify-between">
+                                <span>{comment.username}</span>
+                              </div>
+                              <p className="text-xl">{comment.comment}</p>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p>No comments yet.</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
-             
-                  </div>
-              
+            </div>
           </>
         )}
       </div>

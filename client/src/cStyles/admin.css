@@ -840,3 +840,7 @@ th {
   column-width: 100px;
   overflow-x: auto;
 }
+.search input {
+  align-items: center;
+  margin-left: 8px;
+}

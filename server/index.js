@@ -11,6 +11,7 @@ import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import PDFDocument from "pdfkit"; // Make sure to import PDFDocument if you're using it for PDF generation
+import { log } from "console";
 
 dotenv.config();
 
@@ -27,8 +28,8 @@ mongoose.connect(
   //exp-proj-db in mongodb -> browser collection
   // process.env.MONGO_URL,
   // "mongodb+srv://exp:exp123@clusterexp.xw5sehz.mongodb.net/session-exp?retryWrites=true&w=majority",
-  //"mongodb+srv://exp:explore@explorecluster.yweprwi.mongodb.net/expdb?retryWrites=true&w=majority",
-    "mongodb+srv://exp:exp@cluster0.wpeuved.mongodb.net/session-exp?retryWrites=true&w=majority",
+  "mongodb+srv://exp:explore@explorecluster.yweprwi.mongodb.net/expdb?retryWrites=true&w=majority",
+  // "mongodb+srv://exp:exp@cluster0.wpeuved.mongodb.net/session-exp?retryWrites=true&w=majority",
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -51,10 +52,8 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     isPremium: { type: Boolean, required: true, default: false }, // Indicates premium status
     expiryDate: { type: String, required: false }, // Indicates premium expiry
-    role2: { type: String, required: true, default: "user" }, // New field for premium status   
-   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TBook' }], // Reference to TBook  model
-   
-    
+    role2: { type: String, required: true, default: "user" }, // New field for premium status
+    favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "TBook" }], // Reference to TBook  model
   },
   { timestamps: true }
 );
@@ -239,7 +238,6 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-   
   },
   { timestamps: true }
 );
@@ -383,9 +381,6 @@ app.post(
   }
 );
 
-
-
-
 const delBookSchema = new mongoose.Schema(
   {
     bkName: {
@@ -450,6 +445,25 @@ app.post("/delbook", async (req, res) => {
     await TBook.deleteOne({ bkName });
 
     return res.send({ message: "book deleted successfully !", status: "del" });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//get deleted books
+app.post("/get-delbook", async (req, res) => {
+  const { delbooks } = await req.body;
+  console.log(delbooks);
+  try {
+    // if (books == "books") {
+    const delbookInfo = await DelBook.find({}); //Book is from where is it from database (user)
+
+    if (!delbookInfo) {
+      return res.send({ message: "No delboook in DB!" });
+    }
+    // console.log(bookInfo);
+    return res.send({ message: "Data found", data: delbookInfo }); // data used from and where
+    // }
   } catch (error) {
     console.log(error);
   }
@@ -1088,7 +1102,7 @@ app.post("/get-user", async (req, res) => {
   }
 });
 
-app.get('/get-username', async (req, res) => {
+app.get("/get-username", async (req, res) => {
   const { username } = req.query; // Use req.query to access query parameters for GET requests
 
   try {
@@ -1099,13 +1113,10 @@ app.get('/get-username', async (req, res) => {
       res.status(404).json({ message: "User doesn't exist!" });
     }
   } catch (error) {
-    console.error('Error fetching user:', error);
-    res.status(500).json({ message: 'Failed to fetch user data' });
+    console.error("Error fetching user:", error);
+    res.status(500).json({ message: "Failed to fetch user data" });
   }
 });
-
-
-
 
 app.post("/update-name", async (req, res) => {
   const { userId, name } = req.body;
@@ -1131,7 +1142,11 @@ app.post("/update-name", async (req, res) => {
 app.post("/update-username", async (req, res) => {
   const { userId, username } = req.body;
   try {
-    const user = await User.findByIdAndUpdate(userId, { username: username }, { new: true });
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { username: username },
+      { new: true }
+    );
     if (user) {
       res.json({ message: "Username updated successfully", user });
     } else {
@@ -1142,7 +1157,6 @@ app.post("/update-username", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
 
 app.post(
   "/upload-user-pfp",
@@ -1274,19 +1288,19 @@ const testbookSchema = new mongoose.Schema(
         },
       },
     ],
-    ratings: [{
-      userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: false,
-        ref: "User",
+    ratings: [
+      {
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: false,
+          ref: "User",
+        },
+        rating: { type: Number, required: true },
       },
-      rating: { type: Number, required: true }
-    }],
+    ],
   },
   { timestamps: true }
 );
-
-
 
 const TBook = mongoose.model("TBook", testbookSchema);
 
@@ -1333,25 +1347,27 @@ app.post(
 );
 
 //rating
-app.post('/submit-rating', async (req, res) => {
-  const { bkName,username, userId, rating } = req.body;
+app.post("/submit-rating", async (req, res) => {
+  const { bkName, username, userId, rating } = req.body;
   try {
     const book = await TBook.findOne({ bkName });
     if (!book) {
-      return res.status(404).json({ message: 'Book not found' });
+      return res.status(404).json({ message: "Book not found" });
     }
     // Check if the user has already rated, update rating if so, else add new rating
-    const existingRatingIndex = book.ratings.findIndex(r => r.userId.toString() === userId);
+    const existingRatingIndex = book.ratings.findIndex(
+      (r) => r.userId.toString() === userId
+    );
     if (existingRatingIndex !== -1) {
       book.ratings[existingRatingIndex].rating = rating;
     } else {
-      book.ratings.push({ userId,username, rating });
+      book.ratings.push({ userId, username, rating });
     }
     await book.save();
-    res.json({ message: 'Rating submitted successfully' });
+    res.json({ message: "Rating submitted successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error submitting rating', error });
+    res.status(500).json({ message: "Error submitting rating", error });
   }
 });
 
@@ -1360,29 +1376,31 @@ const commentSchema = new mongoose.Schema({
   bkName: { type: String, required: true },
   username: { type: String, required: true },
   comment: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
 });
 
-const Comment = mongoose.model('Comment', commentSchema);
-app.post('/submit-comment', async (req, res) => {
+const Comment = mongoose.model("Comment", commentSchema);
+app.post("/submit-comment", async (req, res) => {
   const { bkName, username, comment } = req.body;
 
   try {
     const newComment = new Comment({
       bkName,
       username,
-      comment
+      comment,
     });
 
     await newComment.save();
-    res.json({ message: 'Comment added successfully!' });
+    res.json({ message: "Comment added successfully!" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Failed to add comment', error: error.toString() });
+    res
+      .status(500)
+      .json({ message: "Failed to add comment", error: error.toString() });
   }
 });
 
-app.get('/comments/:bkName', async (req, res) => {
+app.get("/comments/:bkName", async (req, res) => {
   const { bkName } = req.params;
 
   try {
@@ -1390,10 +1408,73 @@ app.get('/comments/:bkName', async (req, res) => {
     res.json(comments);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Failed to fetch comments', error: error.toString() });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch comments", error: error.toString() });
   }
 });
 
+//get comment
+app.post("/get-comment", async (req, res) => {
+  const { comments } = await req.body;
+  console.log(comments);
+  try {
+    // if (books == "books") {
+    const commentInfo = await Comment.find({}); //Book is from where is it from database (user)
+
+    if (!commentInfo) {
+      return res.send({ message: "No comment in DB!" });
+    }
+    // console.log(bookInfo);
+    return res.send({ message: "Data found", data: commentInfo }); // data used from and where
+    // }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//delete comment
+const delCommentSchema = new mongoose.Schema(
+  {
+    bkName: { type: String, required: true },
+    username: { type: String, required: true },
+    comment: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
+  },
+  { timestamps: true }
+);
+
+const DelComment = new mongoose.model("DelComment", delCommentSchema);
+
+app.post("/delcomment", async (req, res) => {
+  try {
+    const { _id } = req.body;
+    // console.log(bkname);
+    const commentExist = await Comment.findOne({ _id: _id });
+
+    if (!commentExist) {
+      return res.send({ message: "Comment doesn't exists!" });
+    }
+
+    const delcomment = new DelComment({
+      bkName: commentExist.bkName,
+      username: commentExist.username,
+      comment: commentExist.comment,
+      createdAt: commentExist.createdAt,
+    });
+
+    await delcomment.save();
+
+    await Comment.deleteOne({ _id });
+
+    return res.send({
+      message: "comment deleted successfully !",
+      status: "del",
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 // app.post("/text-addbookchp", async (req, res) => {
 app.post("/text-addbookchp", async (req, res) => {
@@ -1425,6 +1506,30 @@ app.post("/text-addbookchp", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Internal Server Error" });
+  }
+});
+
+//edit chapter
+app.post("/edit-chp", async (req, res) => {
+  try {
+    const { bkName, title, content } = req.body;
+    console.log(req.body);
+    console.log(bkName);
+    const bookInfo = await TBook.findOne({ bkName: bkName });
+
+    if (!bookInfo) {
+      return res.send({ message: "book doesn't exists!" });
+    }
+    console.log(bookInfo.chapters.title);
+    if (title) bookInfo.chapters.title = title;
+    if (content) bookInfo.chapters.content = content;
+
+    await bookInfo.save();
+
+    return res.send({ message: "Book edited Successfully!", status: "ok" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "Internal Server Error" });
   }
 });
 
@@ -1557,135 +1662,147 @@ app.get("/get-random-books", async (req, res) => {
 
 // favraite books
 // Endpoint to add a book to favorites
-app.post('/add-to-favorites', async (req, res) => {
+app.post("/add-to-favorites", async (req, res) => {
   const { userId, bookId } = req.body;
 
   try {
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     // Check if the book is already in favorites
     if (!user.favorites.includes(bookId)) {
       user.favorites.push(bookId);
       await user.save();
-      res.json({ message: 'Book added to favorites' });
+      res.json({ message: "Book added to favorites" });
     } else {
-      res.status(400).json({ message: 'Book is already in favorites' });
+      res.status(400).json({ message: "Book is already in favorites" });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error adding book to favorites', error: error.toString() });
+    res.status(500).json({
+      message: "Error adding book to favorites",
+      error: error.toString(),
+    });
   }
 });
 // Endpoint to remove a book from favorites
-app.post('/remove-from-favorites', async (req, res) => {
+app.post("/remove-from-favorites", async (req, res) => {
   const { userId, bookId } = req.body;
 
   try {
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     // Check if the book is in favorites before attempting to remove it
     if (user.favorites.includes(bookId)) {
       user.favorites.pull(bookId); // mongoose method to remove item from array
       await user.save();
-      res.json({ message: 'Book removed from favorites' });
+      res.json({ message: "Book removed from favorites" });
     } else {
-      res.status(400).json({ message: 'Book is not in favorites' });
+      res.status(400).json({ message: "Book is not in favorites" });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error removing book from favorites', error: error.toString() });
+    res.status(500).json({
+      message: "Error removing book from favorites",
+      error: error.toString(),
+    });
   }
 });
-app.post('/is-favorited', async (req, res) => {
+app.post("/is-favorited", async (req, res) => {
   const { userId, bookId } = req.body;
-  
-  try {
-      const user = await User.findById(userId);
-      if (!user) {
-          return res.status(404).json({ message: 'User not found' });
-      }
 
-      const isFavorited = user.favorites.includes(bookId);
-      res.json({ isFavorited });
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isFavorited = user.favorites.includes(bookId);
+    res.json({ isFavorited });
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal server error', error: error.toString() });
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.toString() });
   }
 });
 
-
-
-app.get('/user-favorites/:userId', async (req, res) => {
+app.get("/user-favorites/:userId", async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const user = await User.findById(userId).populate('favorites');
+    const user = await User.findById(userId).populate("favorites");
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     res.json({ favorites: user.favorites });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error fetching favorite books', error: error.toString() });
+    res.status(500).json({
+      message: "Error fetching favorite books",
+      error: error.toString(),
+    });
   }
 });
 
 //handel premium
 
-const paymentDetailSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: "User",
+const paymentDetailSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
+    },
+    username: {
+      type: String,
+      required: true,
+    },
+    paymentId: {
+      type: String,
+      required: true,
+    },
+    plan: {
+      type: String,
+      required: true,
+    },
+    amount: {
+      type: String,
+      required: true,
+    },
+    currency: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: Date,
+      required: true,
+    },
+    isPremium: {
+      type: Boolean,
+      required: true,
+    },
+    expiryDate: {
+      type: Date,
+      required: true,
+    },
   },
-  username: {
-    type: String,
-    required: true,
-  },
-  paymentId: {
-    type: String,
-    required: true,
-  },
-  plan: {
-    type: String,
-    required: true,
-  },
-  amount: {
-    type: String,
-    required: true,
-  },
-  currency: {
-    type: String,
-    required: true,
-  },
-  date: {
-    type: Date,
-    required: true,
-  },
-  isPremium: {
-    type: Boolean,
-    required: true,
-  },
-  expiryDate: {
-    type: Date,
-    required: true,
-  },
-}, { timestamps: true });
-
+  { timestamps: true }
+);
 
 const PaymentDetail = new mongoose.model("PaymentDetail", paymentDetailSchema);
 
 app.post("/store-payment-details", async (req, res) => {
   // console.log("Received payment details:", req.body);
   try {
-    const { userId, username, paymentId, plan, date, amount, currency } = req.body;
+    const { userId, username, paymentId, plan, date, amount, currency } =
+      req.body;
     const pdfPath = `receipts/${paymentId}.pdf`; // Path where the PDF receipt will be saved
 
     // Format the date for display
@@ -1725,12 +1842,12 @@ app.post("/store-payment-details", async (req, res) => {
 
     const paymentDetail = new PaymentDetail({
       userId: req.body.userId,
-      username:req.body.username,
+      username: req.body.username,
       paymentId: req.body.paymentId,
       plan: req.body.plan,
       date: req.body.date,
-      amount:req.body.amount,
-      currency:req.body.currency,
+      amount: req.body.amount,
+      currency: req.body.currency,
       isPremium: true,
       expiryDate, // Make sure your schema supports this
     });

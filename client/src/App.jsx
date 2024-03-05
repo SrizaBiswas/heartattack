@@ -16,6 +16,12 @@ import AllBooks from "./components/AllBooks/AllBooks.jsx";
 import Audiobk from "./components/AllBooks/Audiobk.jsx";
 import "./cStyles/home.css";
 import Magasearch from "./components/AllBooks/Magasearch.jsx";
+import Report from "./components/admin/Report.jsx";
+import Comments from "./components/admin/Comments.jsx";
+import BookRatings from "./components/admin/BookRatings.jsx";
+import AudiobookRatings from "./components/admin/AudiobookRatings.jsx";
+import MagazineRatings from "./components/admin/MagazineRatings.jsx";
+import Transaction from "./components/admin/Transaction.jsx";
 // admin panel import
 import Header from "./components/admin/AdminHeader.jsx";
 import Sidebar from "./components/admin/AdminSidebar.jsx";
@@ -94,6 +100,15 @@ const App = () => {
               <Route path="/admin/addgenre" element={<Addgenre />} />
               <Route path="/admin/adduser" element={<Adduser />} />
               <Route path="/admin/payments" element={<Payments />} />
+              <Route path="/admin/report" element={<Report />} />
+              <Route path="/admin/comments" element={<Comments />} />
+              <Route path="/admin/bkratings" element={<BookRatings />} />
+              <Route
+                path="/admin/audioratings"
+                element={<AudiobookRatings />}
+              />
+              <Route path="/admin/magaratings" element={<MagazineRatings />} />
+              <Route path="/admin/transaction" element={<Transaction />} />
             </Routes>
           </Router>
           <Router>
@@ -143,10 +158,7 @@ const App = () => {
             path="/admin/books/audiobook-detail/:audioBkName"
             element={<AudiobookDetail />}
           />
-           <Route
-            path="/about/about.jsx"
-            element={<About />}
-          />
+          <Route path="/about/about.jsx" element={<About />} />
           <Route
             path="/admin/books/magazines-detail/:magName"
             element={<MagazineDetails />}
@@ -164,7 +176,7 @@ const App = () => {
           <Route path="/audiobk" element={<Audiobk />} />
           <Route path="/magasearch" element={<Magasearch />} />
           <Route path="/audiobookslider" element={<AudiobookSlider />} />
-          <Route path="/about" element={<About/>} /> 
+          <Route path="/about" element={<About />} />
 
           {/* <Route path="/bookslider/books" element={<Books />} /> */}
           <Route path="/test" element={<TestFile />} />
@@ -174,10 +186,9 @@ const App = () => {
           <Route path="/test-add-book" element={<TestAddBook />} />
           <Route path="/test-chp/:bkName" element={<AddBookChapters />} />
           <Route path="/bookview/:bkName" element={<BookView />} />
-
         </Routes>
       </Router>
-      <Footer />
+      {!admin_href && <Footer />}
       <OrderPopup orderPopup={orderPopup} setOrderPopup={setOrderPopup} />
     </div>
   );
@@ -197,21 +208,15 @@ export const admin_href =
   window.location.href == "http://localhost:5173/admin/addgenre" ||
   window.location.href == "http://localhost:5173/admin/adduser" ||
   window.location.href == "http://localhost:5173/admin/payments" ||
+  window.location.href == "http://localhost:5173/admin/report" ||
+  window.location.href == "http://localhost:5173/admin/comments" ||
+  window.location.href == "http://localhost:5173/admin/bkratings" ||
+  window.location.href == "http://localhost:5173/admin/audioratings" ||
+  window.location.href == "http://localhost:5173/admin/magaratings" ||
+  window.location.href == "http://localhost:5173/admin/transaction" ||
   window.location.href ==
     "http://localhost:5173/admin/books/book-detail/:bkname" ||
   window.location.href ==
     "http://localhost:5173/admin/books/audiobook-detail/:audioBkName";
 window.location.href ==
   "http://localhost:5173/admin/books/magazines-detail/:magName";
-
-
-
-
-
-
-
-
-
-
-
-  
