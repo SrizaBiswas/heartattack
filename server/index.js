@@ -143,13 +143,13 @@ app.post("/forgortpassword", async (req, res) => {
     port: 587,
     secure: true,
     auth: {
-      user: "it24img@gmail.com",
-      pass: "fvfh msrl wuru ulkq",
+      user: "explorethebooks3002@gmail.com",
+      pass: "wnhg tmnr rrvm noty",
     },
   });
 
   const options = {
-    from: "it24img@gmail.com",
+    from: "explorethebooks3002@gmail.com",
     to: email,
     subject: "Explore - Reset Password",
     html: emailHtml,
@@ -1297,7 +1297,16 @@ const testbookSchema = new mongoose.Schema(
         },
         rating: { type: Number, required: true },
       },
+<<<<<<< HEAD
     ],
+
+      username: {
+        type: String,
+        required: false,
+      },
+      rating: { type: Number, required: true }
+    }],
+>>>>>>> fc59a496f78ff2a060ae4c2536b3ec0217f1be03
   },
   { timestamps: true }
 );
@@ -1870,8 +1879,8 @@ app.post("/store-payment-details", async (req, res) => {
       port: 587,
       secure: true, // Note: `secure` should be false for port 587, true for port 465
       auth: {
-        user: "it24img@gmail.com", // Your Gmail address
-        pass: "fvfh msrl wuru ulkq", // Your Gmail password or App Password
+        user: "explorethebooks3002@gmail.com", // Your Gmail address
+        pass: "wnhg tmnr rrvm noty", // Your Gmail password or App Password
       },
     });
 
@@ -1880,7 +1889,7 @@ app.post("/store-payment-details", async (req, res) => {
 
     // Email content for payment receipt
     const mailOptions = {
-      from: "it24img@gmail.com", // Sender address
+      from: "explorethebooks3002@gmail.com", // Sender address
       to: userEmail, // Recipient email from the updated user document
       subject: "Payment Receipt - Explore Premium Subscription",
       html: `<p>Hello Reader !!</p>

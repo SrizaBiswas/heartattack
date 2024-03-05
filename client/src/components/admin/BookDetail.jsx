@@ -228,6 +228,7 @@ const BookDetail = () => {
 
   const [userRating, setUserRating] = useState(0);
 
+<<<<<<< HEAD
   // Mock function to handle rating submission - replace with your actual API call
   const submitRating = (newRating) => {
     axios
@@ -244,6 +245,23 @@ const BookDetail = () => {
       })
       .catch((error) => console.error("Error submitting rating", error));
   };
+=======
+// Mock function to handle rating submission - replace with your actual API call
+const submitRating = (newRating) => {
+  axios.post('http://localhost:3001/submit-rating', {
+    bkName: bookDetail.bkName,
+    userId: uData._id, // Assuming you store user ID in local storage or context
+    username: uData.username,
+    rating: newRating,
+  })
+  .then((response) => {
+    console.log(response.data);
+    setUserRating(newRating); // Update the local user rating state
+    // Optionally, refresh the book detail to fetch updated ratings
+  })
+  .catch((error) => console.error('Error submitting rating', error));
+};
+>>>>>>> fc59a496f78ff2a060ae4c2536b3ec0217f1be03
 
   useEffect(() => {
     // Assuming bookDetail contains rating information
