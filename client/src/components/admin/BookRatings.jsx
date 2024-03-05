@@ -72,7 +72,7 @@ const BookRatings = () => {
               <ul className="list-disc ml-4">
                 {book.ratings.map((rating) => (
                   <li key={rating.userId}>
-                    {rating.username}={rating.rating}
+                    {rating.username} = {rating.rating}
                   </li>
                 ))}
               </ul>

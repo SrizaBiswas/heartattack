@@ -763,7 +763,7 @@ app.post("/get-mag", async (req, res) => {
   }
 });
 
-//edit-audiobooks
+//edit-magazine
 app.post(
   "/edit-magazine",
   upload.fields([
@@ -909,6 +909,25 @@ app.post("/delmagazine", async (req, res) => {
       message: "magazine deleted successfully !",
       status: "del",
     });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//get delmagazine
+app.post("/get-delmag", async (req, res) => {
+  const { delmagazines } = await req.body;
+  console.log(delmagazines);
+  try {
+    // if (books == "books") {
+    const delmagazineInfo = await DelMagazine.find({}); //Book is from where is it from database (user)
+
+    if (!delmagazineInfo) {
+      return res.send({ message: "No magazine in DB!" });
+    }
+    // console.log(bookInfo);
+    return res.send({ message: "Data found", data: delmagazineInfo }); // data used from and where
+    // }
   } catch (error) {
     console.log(error);
   }

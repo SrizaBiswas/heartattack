@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {
-  BsFillArchiveFill,
-  BsFillGrid3X3GapFill,
-  BsPeopleFill,
-  BsFillBellFill,
-} from "react-icons/bs";
-import { IoArrowUpOutline } from "react-icons/io5";
+import { RiDeleteBin5Fill } from "react-icons/ri";
+import { FaArrowUpLong } from "react-icons/fa6";
+import { GiBookshelf } from "react-icons/gi";
+import { MdAudiotrack } from "react-icons/md";
+import { TiNews } from "react-icons/ti";
+import { HiUserGroup } from "react-icons/hi2";
 
 const Transaction = () => {
   //get data
@@ -125,7 +124,29 @@ const Transaction = () => {
       fetchmagazines();
     }
   }, []);
+  //delete magazine
+  const [delmagadata, setDelMagadata] = useState();
+  const fetchdelmagazines = async () => {
+    const delmagazineColl = "delmagazines";
+    try {
+      axios
+        .post("http://localhost:3001/get-delmag", delmagazineColl)
+        .then((res) => {
+          const databook = res.data.data; //data.data??
 
+          setDelMagadata(databook.length);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (!delmagadata) {
+      fetchdelmagazines();
+    }
+  }, []);
+  const totalMagazineData = magadata + delmagadata;
   //USER
   const [userdata, setUserdata] = useState();
   const fetchusers = async () => {
@@ -177,16 +198,22 @@ const Transaction = () => {
           <div className="bkcard gap-5">
             <div className="flex ">
               <h3>TOTAL COUNT OF BOOKS ENTERED INTO THE DATABASE</h3>
-              <IoArrowUpOutline className="card_icon" size={100} />
+              <FaArrowUpLong className="card_icon" size={100} />
             </div>
             <h1>{totalBookData}</h1>
           </div>
           <div className="bkcard gap-5">
-            <h3>TOTAL COUNT OF BOOKS DELETED FROM DATABASE</h3>
+            <div className="flex ">
+              <h3>TOTAL COUNT OF BOOKS DELETED FROM DATABASE</h3>
+              <RiDeleteBin5Fill className="card_icon" size={100} />
+            </div>
             <h1>{delbookdata}</h1>
           </div>
           <div className="bkcard gap-5">
-            <h3>CURRENT BOOKS PRESENT IN THE DATABASE</h3>
+            <div className="flex ">
+              <h3>CURRENT BOOKS PRESENT IN THE DATABASE</h3>
+              <GiBookshelf className="card_icon" size={100} />
+            </div>
             <h1>{bookdata}</h1>
           </div>
         </div>
@@ -195,15 +222,24 @@ const Transaction = () => {
 
         <div className="tcards h-auto ">
           <div className="bkcard gap-5">
-            <h3>TOTAL COUNT OF AUDIOBOOKS ENTERED INTO THE DATABASE</h3>
+            <div className="flex ">
+              <h3>TOTAL COUNT OF AUDIOBOOKS ENTERED INTO THE DATABASE</h3>
+              <FaArrowUpLong className="card_icon" size={100} />
+            </div>
             <h1>{totalAudiobookData}</h1>
           </div>
           <div className="bkcard gap-5">
-            <h3>TOTAL COUNT OF AUDIOBOOKS DELETED FROM DATABASE</h3>
+            <div className="flex ">
+              <h3>TOTAL COUNT OF AUDIOBOOKS DELETED FROM DATABASE</h3>
+              <RiDeleteBin5Fill className="card_icon" size={100} />
+            </div>
             <h1>{delaudiobookdata}</h1>
           </div>
           <div className="bkcard gap-5">
-            <h3>CURRENT AUDIOBOOKS PRESENT IN THE DATABASE</h3>
+            <div className="flex ">
+              <h3>CURRENT AUDIOBOOKS PRESENT IN THE DATABASE</h3>
+              <MdAudiotrack className="card_icon" size={100} />
+            </div>
             <h1>{audiobookdata}</h1>
           </div>
         </div>
@@ -212,15 +248,24 @@ const Transaction = () => {
 
         <div className="tcards h-auto ">
           <div className="bkcard gap-5">
-            <h3>TOTAL COUNT OF MAGAZINES ENTERED INTO THE DATABASE</h3>
-            <h1>{totalAudiobookData}</h1>
+            <div className="flex ">
+              <h3>TOTAL COUNT OF MAGAZINES ENTERED INTO THE DATABASE</h3>
+              <FaArrowUpLong className="card_icon" size={100} />
+            </div>
+            <h1>{totalMagazineData}</h1>
           </div>
           <div className="bkcard gap-5">
-            <h3>TOTAL COUNT OF MAGAZINES DELETED FROM DATABASE</h3>
-            <h1>{delaudiobookdata}</h1>
+            <div className="flex ">
+              <h3>TOTAL COUNT OF MAGAZINES DELETED FROM DATABASE</h3>
+              <RiDeleteBin5Fill className="card_icon" size={100} />
+            </div>
+            <h1>{delmagadata}</h1>
           </div>
           <div className="bkcard gap-5">
-            <h3>CURRENT MAGAZINES PRESENT IN THE DATABASE</h3>
+            <div className="flex ">
+              <h3>CURRENT MAGAZINES PRESENT IN THE DATABASE</h3>
+              <TiNews className="card_icon" size={100} />
+            </div>
             <h1>{magadata}</h1>
           </div>
         </div>
@@ -229,15 +274,24 @@ const Transaction = () => {
 
         <div className="tcards h-auto ">
           <div className="bkcard gap-5">
-            <h3>TOTAL COUNT OF USERS ENTERED INTO THE DATABASE</h3>
+            <div className="flex ">
+              <h3>TOTAL COUNT OF USERS ENTERED INTO THE DATABASE</h3>
+              <FaArrowUpLong className="card_icon" size={100} />
+            </div>
             <h1>{totaluserData}</h1>
           </div>
           <div className="bkcard gap-5">
-            <h3>TOTAL COUNT OF USERS DELETED FROM DATABASE</h3>
+            <div className="flex ">
+              <h3>TOTAL COUNT OF USERS DELETED FROM DATABASE</h3>
+              <RiDeleteBin5Fill className="card_icon" size={100} />
+            </div>
             <h1>{deluserdata}</h1>
           </div>
           <div className="bkcard gap-5">
-            <h3>CURRENT USERS PRESENT IN THE DATABASE</h3>
+            <div className="flex ">
+              <h3>CURRENT USERS PRESENT IN THE DATABASE</h3>
+              <HiUserGroup className="card_icon" size={100} />
+            </div>
             <h1>{userdata}</h1>
           </div>
         </div>
