@@ -231,7 +231,7 @@ const submitRating = (newRating) => {
   axios.post('http://localhost:3001/submit-rating', {
     bkName: bookDetail.bkName,
     userId: uData._id, // Assuming you store user ID in local storage or context
-    username:uData.username,
+    username: uData.username,
     rating: newRating,
   })
   .then((response) => {
